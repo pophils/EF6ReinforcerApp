@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainDBContext.cs" />
+    <Compile Include="DomainModule.cs" />
     <Compile Include="Entities\Author.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\Blog.cs" />
