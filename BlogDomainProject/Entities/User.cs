@@ -34,6 +34,11 @@ namespace BlogDomainProject.Entities
         [Column("password", TypeName = "nvarchar")]
         public string Password { get; set; }
 
+         
+        [Column("user_guid", TypeName = "nvarchar")]
+        public string UserGuid { get; set; }
+
+
         [NotMapped]
         public EntityStateEnum EntityState { get; set; }
 
