@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 using BlogDomainProject.Utils;
+using BlogDomainProject.Interface;
 
 namespace BlogDomainProject.Entities
 {
-    public class User : IValidatableObject
+    public class User : IValidatableObject, IEntity
     {
         public User()
         {
@@ -29,14 +31,33 @@ namespace BlogDomainProject.Entities
         [MinLength(6, ErrorMessage="Password must not be less than 6 characters")]
         [Column("password", TypeName = "nvarchar")]
         public string Password { get; set; }
-
          
         [Column("user_guid", TypeName = "nvarchar")]
         public string UserGuid { get; set; }
 
 
+        [Required(ErrorMessage = "Please enter a the created date")]
+        [Column("created_date", TypeName = "DateTime2")]
+        public DateTime CreatedDate { get; set; }
+
+        [Column("last_modified_date", TypeName = "DateTime2")]
+        public DateTime LastModifiedDate { get; set; }
+
+        [Required(ErrorMessage = "Please enter a the created by")]
+        [Column("created_by", TypeName = "nvarchar")]
+        [StringLength(50, ErrorMessage = "Please enter a created by that is not more than 50 characters")]
+        public string CreatedBy { get; set; }
+
+        [Column("last_modified_by", TypeName = "nvarchar")]
+        [StringLength(50, ErrorMessage = "Please enter a last created by that is not more than 50 characters")]
+        public string LastModifiedBy { get; set; }
+
         [NotMapped]
         public EntityStateEnum EntityState { get; set; }
+
+        [Timestamp] 
+        public byte[] RowVersion { get; set; }
+
 
         [Column("role_id", TypeName = "int")]
         [ForeignKey("Role")]
@@ -65,6 +86,7 @@ namespace BlogDomainProject.Entities
                 }
             }
         }
+         
     }
 
 

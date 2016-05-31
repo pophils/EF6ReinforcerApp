@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 using BlogDomainProject.Utils;
+using BlogDomainProject.Interface;
 
 namespace BlogDomainProject.Entities
 {
-    public class Role : IValidatableObject
+    public class Role : IValidatableObject, IEntity
     {
         public Role()
         {
@@ -42,6 +43,9 @@ namespace BlogDomainProject.Entities
 
         [NotMapped]
         public EntityStateEnum EntityState { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public virtual ICollection<User> Users { get; set; }
 

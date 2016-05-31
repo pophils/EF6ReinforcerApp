@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 using BlogDomainProject.Utils;
+using BlogDomainProject.Interface;
 
 namespace BlogDomainProject.Entities
 {
-    public class Blog
+    public class Blog : IEntity
     {
         public Blog()
         {
@@ -46,6 +47,9 @@ namespace BlogDomainProject.Entities
 
         [NotMapped]
         public EntityStateEnum EntityState { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         [Column("category_id", TypeName = "int")]
         public int CategoryId { get; set; }

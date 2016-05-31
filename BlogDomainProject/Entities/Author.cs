@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 using BlogDomainProject.Utils;
+using BlogDomainProject.Interface;
 
 namespace BlogDomainProject.Entities
 {
-    public class Author
+    public class Author : IEntity
     {
         public Author()
         {
@@ -42,6 +43,10 @@ namespace BlogDomainProject.Entities
 
         [NotMapped]
         public EntityStateEnum EntityState { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
          
         public virtual User User { get; set; }
         public virtual ICollection<Blog> Blogs { get; set; }

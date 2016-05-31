@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 using BlogDomainProject.Utils;
+using BlogDomainProject.Interface;
 
 namespace BlogDomainProject.Entities
 {
-    public class Reader
+    public class Reader : IEntity
     { 
         [Key, ForeignKey("User")]
         [Column("user_id", TypeName = "int")]
@@ -35,6 +36,9 @@ namespace BlogDomainProject.Entities
 
         [NotMapped]
         public EntityStateEnum EntityState { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public virtual User User { get; set; }  
     }

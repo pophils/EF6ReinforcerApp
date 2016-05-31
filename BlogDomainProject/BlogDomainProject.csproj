@@ -57,6 +57,7 @@
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Interface\IBlogDomain.cs" />
+    <Compile Include="Interface\IEntity.cs" />
     <Compile Include="Logic\DomainService.cs" />
     <Compile Include="Migrations\201605281344363_InitialCreate.cs" />
     <Compile Include="Migrations\201605281344363_InitialCreate.Designer.cs">
