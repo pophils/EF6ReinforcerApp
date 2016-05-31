@@ -1,5 +1,8 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
 using BlogDomainProject.Entities;
+using BlogDomainProject.Interface;
 using BlogDomainProject.Migrations;
 
 namespace BlogDomainProject
@@ -36,7 +39,23 @@ namespace BlogDomainProject
 
         //override savechanges
         public override int SaveChanges()
-        {            
+        {           
+ 
+            //Update modification history
+            var entities = ChangeTracker.Entries()
+                .Where(e => e.Entity is IEntity && (e.State == EntityState.Added || e.State == EntityState.Added))
+                .Select(e => e.Entity as IEntity);
+
+            foreach (var entity in entities)
+            {
+                entity.LastModifiedDate = DateTime.Now;
+
+                if (entity.CreatedDate <= DateTime.MinValue) // its a new object
+                {
+                    entity.CreatedDate = DateTime.Now;
+                } 
+            }
+
             return base.SaveChanges();
         }
 
