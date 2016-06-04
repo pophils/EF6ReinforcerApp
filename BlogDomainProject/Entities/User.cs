@@ -82,7 +82,7 @@ namespace BlogDomainProject.Entities
                 if (userExist)
                 {
                     yield return new ValidationResult("The entered email already exist, please enter a new email.",
-                        new string[] { "Email" });
+                        new[] { "Email" });
                 }
             }
         }

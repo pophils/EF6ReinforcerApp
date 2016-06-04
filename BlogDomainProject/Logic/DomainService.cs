@@ -1,4 +1,7 @@
-﻿using BlogDomainProject.Entities;
+﻿using System.Collections.Generic;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
+using BlogDomainProject.Entities;
 using BlogDomainProject.Interface;
 using System.Linq;
 
@@ -6,46 +9,56 @@ namespace BlogDomainProject.Logic
 {
     public class DomainService : IBlogDomain
     {
-
         /// <summary>
         /// Check if the DB has at least one user.
         /// </summary>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public bool DbHasUsers(DomainDBContext context)
+        public bool DbHasUsers()
         {
-            return context.Users.Any();
-        }
-
-
-        /// <summary>
-        /// Create an admin superuser
-        /// </summary>
-        /// <param name="context">DbContext instance</param>
-        /// <param name="user">User instance</param>
-        /// <returns></returns>
-        public void CreateAdminUser(DomainDBContext context, User user, Author author)
-        {
-            context.Users.Add(user);
-            context.Authors.Add(author);
-        }
-
-        /// <summary>
-        /// Find a role by its name
-        /// </summary>
-        /// <param name="context">DbContext instance</param>
-        /// <param name="roleName">role name</param>
-        /// <param name="withoutTrackingChanges">Determines if returned object should be tracked by EF or not</param>
-        /// <returns></returns>
-        public Role GetRoleByName(DomainDBContext context, string roleName, bool withoutTrackingChanges)
-        {
-            if (withoutTrackingChanges)
+            using (var context = new DomainDBContext())
             {
-                return context.Roles.AsNoTracking().Where(r => r.Name.ToLower() == roleName.ToLower()).FirstOrDefault<Role>();
+                return context.Users.Any();
+            }
+        }
+
+        public bool CreateAdminUser(User user, Author author, Role role, out List<string> errorList )
+        {
+            errorList = new List<string>();
+            var saveSuccessful = true;
+
+            using (var context = new DomainDBContext())
+            {
+                try
+                {
+                    LogQueryToVSTrace(context);
+                    
+                    AutoDetectChange(context, false);
+
+                    context.Roles.Add(role);
+                    context.Users.Add(user);
+                    context.Authors.Add(author);
+
+                    context.SaveChanges();
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    foreach (var entityValidationError in context.GetValidationErrors())
+                    {
+                        foreach (var error in entityValidationError.ValidationErrors)
+                        {
+                            errorList.Add("Entity: " + entityValidationError.Entry.Entity.GetType().FullName + " Property Name: " + error.PropertyName + " ErrorMessage: " + error.ErrorMessage);
+                        }
+                    }
+                    saveSuccessful = false;
+                }
+                finally
+                {
+                    AutoDetectChange(context, true);
+                }
             }
 
-            return context.Roles.Where(r => r.Name.ToLower() == roleName.ToLower()).FirstOrDefault<Role>();
-        }
+            return saveSuccessful;
+        } 
 
         /// <summary>
         /// Save changes to DB
@@ -64,29 +77,29 @@ namespace BlogDomainProject.Logic
         /// <param name="detect">Disable or Enable AutoDetectChanges during record insert</param>
         public void AutoDetectChange(DomainDBContext context, bool detect)
         {
-            if (detect)
-            {
-                context.Configuration.AutoDetectChangesEnabled = true;
-            }
-            else
-            {
-                context.Configuration.AutoDetectChangesEnabled = false;
-            }
+            context.Configuration.AutoDetectChangesEnabled = detect;
         }
 
         /// <summary>
         /// Get user login guid using login credential
-        /// </summary>
-        /// <param name="context">DbContext instance</param>
+        /// </summary> 
         /// <param name="email">Email</param>
         /// <param name="password">Password</param>
         /// <returns>string userGuid</returns>
-        public string GetUserLoginGuidWithLoginCredentials(DomainDBContext context, string email, string password)
+        public string GetUserLoginGuidWithLoginCredentials(string email, string password)
         {
-           return context.Users
-                         .Where(u => u.Email.ToLower() == email.ToLower() && u.Password.ToLower() == password.ToLower())
-                         .Select(s => s.UserGuid)
-                         .FirstOrDefault<string>();
-        }        
+            using (var context = new DomainDBContext())
+            {
+                return context.Users
+                    .Where(u => u.Email.ToLower() == email.ToLower() && u.Password.ToLower() == password.ToLower())
+                    .Select(s => s.UserGuid)
+                    .FirstOrDefault();
+            }
+        }
+
+        public void LogQueryToVSTrace(DomainDBContext context)
+        {
+            context.Database.Log = message => Trace.WriteLine(message);
+        }
     }
 }

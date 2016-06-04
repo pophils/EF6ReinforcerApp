@@ -58,10 +58,12 @@ namespace BlogDomainProject.Entities
     {
         public AuthorConfiguration()
         {
+ 
             ToTable("authors");
-            Property(a => a.UserId)
+            Property(a => a.UserId)                
                 .IsRequired()
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None); 
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);  
+           
         }        
     }
 }

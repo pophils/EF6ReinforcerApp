@@ -1,4 +1,5 @@
-﻿using BlogDomainProject.Entities;
+﻿using System.Collections.Generic;
+using BlogDomainProject.Entities;
 
 namespace BlogDomainProject.Interface
 {
@@ -6,25 +7,18 @@ namespace BlogDomainProject.Interface
     
         /// <summary>
         /// Check if the DB has at least one user.
-        /// </summary>
-        /// <param name="context"></param>
+        /// </summary> 
         /// <returns></returns>
-        bool DbHasUsers(DomainDBContext context);
+        bool DbHasUsers();
+
         /// <summary>
         /// Create an admin superuser
-        /// </summary>
-        /// <param name="context">DbContext instance</param>
-        /// <param name="user">User instance</param> 
-       void CreateAdminUser(DomainDBContext context, User user, Author author);
-        
-        /// <summary>
-        /// Find a role by its name
-        /// </summary>
-        /// <param name="context">DbContext instance</param>
-        /// <param name="roleName">role name</param>
-        /// <param name="withoutTrackingChanges">Determines if returned object should be tracked by EF or not</param>
-        /// <returns></returns>
-        Role GetRoleByName(DomainDBContext context, string roleName, bool withoutTrackingChanges);
+        /// </summary> 
+        /// <param name="user">User instance</param>
+        /// <param name="author">Author instance</param>
+        /// <param name="role">Role instance</param>
+        /// <param name="errorList"></param> 
+        bool CreateAdminUser(User user, Author author, Role role, out List<string> errorList);
         
         /// <summary>
         /// Save changes to DB
@@ -42,11 +36,16 @@ namespace BlogDomainProject.Interface
 
         /// <summary>
         /// Get user login guid using login credential
-        /// </summary>
-        /// <param name="context">DbContext instance</param>
+        /// </summary> 
         /// <param name="email">Email</param>
         /// <param name="password">Password</param>
         /// <returns>string userGuid</returns>
-        string GetUserLoginGuidWithLoginCredentials(DomainDBContext context, string email, string password);
+        string GetUserLoginGuidWithLoginCredentials(string email, string password);
+
+        /// <summary>
+        /// Output queries and commands sent by EF
+        /// </summary>
+        /// <param name="context"></param>
+        void LogQueryToVSTrace(DomainDBContext context);
     }
 }
