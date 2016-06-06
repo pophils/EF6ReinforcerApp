@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BlogDomainProject.DTO;
 using BlogDomainProject.Entities;
 
 namespace BlogDomainProject.Interface
@@ -47,5 +48,14 @@ namespace BlogDomainProject.Interface
         /// </summary>
         /// <param name="context"></param>
         void LogQueryToVSTrace(DomainDBContext context);
+
+        /// <summary>
+        /// Get the role name of the user.
+        /// </summary>
+        /// <param name="userGuid">user guid</param>
+        /// <returns></returns>
+        string GetUserRoleName(string userGuid);
+
+        IList<BlogSummary> GetBlogs(int pageNo, int pageSize);
     }
 }

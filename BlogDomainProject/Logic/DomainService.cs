@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
+using BlogDomainProject.DTO;
 using BlogDomainProject.Entities;
 using BlogDomainProject.Interface;
 using System.Linq;
@@ -100,6 +102,56 @@ namespace BlogDomainProject.Logic
         public void LogQueryToVSTrace(DomainDBContext context)
         {
             context.Database.Log = message => Trace.WriteLine(message);
+        }
+
+        public string GetUserRoleName(string userGuid)
+        {
+            using (var context = new DomainDBContext())
+            {
+                return context.Users
+                    .Include(u => u.Role)
+                    .Where(u => u.UserGuid == userGuid)
+                    .Select(u => u.Role.Name.ToLower())
+                    .FirstOrDefault();
+            }
+        }
+
+        public IList<BlogSummary> GetBlogs(int pageNo, int pageSize)
+        {
+            using (var context = new DomainDBContext())
+            {
+                LogQueryToVSTrace(context);
+
+                //return context.Blogs
+                //    .Include(b => b.Author)
+                //    .Include(b => b.Comments)
+                //    .OrderBy(b => b.Id)
+                //    .Skip((pageNo - 1) * pageSize).Take(pageSize)
+                //    .Select(b => new BlogSummary()
+                //    {
+                //        Title = b.Title,
+                //        AuthorName = b.Author.Name,
+                //        NumberOfComments = b.Comments.Count(),
+                //        DatePosted = b.CreatedDate,
+                //        BlogId = b.Id,
+                //        NumberOfViews = 0
+                //    })
+                //    .ToList();
+
+                return context.Blogs 
+                   .OrderBy(b => b.Id)
+                   .Skip((pageNo - 1) * pageSize).Take(pageSize)
+                   .Select(b => new BlogSummary()
+                   {
+                       Title = b.Title,
+                       AuthorName = b.Author.Name,
+                       NumberOfComments = b.Comments.Count(),
+                       DatePosted = b.CreatedDate,
+                       BlogId = b.Id,
+                       NumberOfViews = 0
+                   })
+                   .ToList();
+            }
         }
     }
 }
