@@ -120,24 +120,6 @@ namespace BlogDomainProject.Logic
         {
             using (var context = new DomainDBContext())
             {
-                LogQueryToVSTrace(context);
-
-                //return context.Blogs
-                //    .Include(b => b.Author)
-                //    .Include(b => b.Comments)
-                //    .OrderBy(b => b.Id)
-                //    .Skip((pageNo - 1) * pageSize).Take(pageSize)
-                //    .Select(b => new BlogSummary()
-                //    {
-                //        Title = b.Title,
-                //        AuthorName = b.Author.Name,
-                //        NumberOfComments = b.Comments.Count(),
-                //        DatePosted = b.CreatedDate,
-                //        BlogId = b.Id,
-                //        NumberOfViews = 0
-                //    })
-                //    .ToList();
-
                 return context.Blogs 
                    .OrderBy(b => b.Id)
                    .Skip((pageNo - 1) * pageSize).Take(pageSize)
